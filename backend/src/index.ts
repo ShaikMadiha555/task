@@ -1,10 +1,10 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
-import { authRouter } from "./routes/auth.js";
-import { dashboardRouter } from "./routes/dashboard.js";
-import { projectsRouter } from "./routes/projects.js";
-import { tasksRouter } from "./routes/tasks.js";
+import { authRouter } from "./routes/auth";
+import { dashboardRouter } from "./routes/dashboard";
+import { projectsRouter } from "./routes/projects";
+import { tasksRouter } from "./routes/tasks";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
