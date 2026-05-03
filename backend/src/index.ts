@@ -16,7 +16,7 @@ const origins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
 
 app.use(
   cors({
-    origin: origins.length ? origins : true,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
