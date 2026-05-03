@@ -23,7 +23,11 @@ export async function api<T>(
   const headers = new Headers(options.headers);
 
   const token = getToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  headers.set("Accept", "application/json");
 
   if (options.json !== undefined) {
     headers.set("Content-Type", "application/json");
@@ -31,17 +35,29 @@ export async function api<T>(
 
   const url = `${apiBase()}${path.startsWith("/") ? path : `/${path}`}`;
 
-  const res = await fetch(url, {
-    ...options,
-    headers,
-    body: options.json !== undefined ? JSON.stringify(options.json) : options.body,
-  });
+  let res: Response;
+
+  try {
+    res = await fetch(url, {
+      method: options.method || "GET",
+      headers,
+      body: options.json !== undefined ? JSON.stringify(options.json) : undefined,
+    });
+  } catch (err) {
+    throw new Error("Network error: Backend not reachable");
+  }
 
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+
+  let data: any = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
 
   if (!res.ok) {
-    throw new Error(data?.error || res.statusText);
+    throw new Error(data?.error || `Request failed with ${res.status}`);
   }
 
   return data as T;
