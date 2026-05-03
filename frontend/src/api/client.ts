@@ -9,6 +9,9 @@ export function setToken(token: string | null) {
   else localStorage.removeItem(TOKEN_KEY);
 }
 
+/**
+ * 🔥 LIVE BACKEND URL (RAILWAY)
+ */
 function apiBase(): string {
   return "https://task-production-cdb8.up.railway.app";
 }
@@ -18,13 +21,16 @@ export async function api<T>(
   options: RequestInit & { json?: unknown } = {}
 ): Promise<T> {
   const headers = new Headers(options.headers);
+
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
+
   if (options.json !== undefined) {
     headers.set("Content-Type", "application/json");
   }
 
   const url = `${apiBase()}${path.startsWith("/") ? path : `/${path}`}`;
+
   const res = await fetch(url, {
     ...options,
     headers,
@@ -32,11 +38,10 @@ export async function api<T>(
   });
 
   const text = await res.text();
-  const data = text ? (JSON.parse(text) as unknown) : null;
+  const data = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    const err = (data as { error?: string })?.error ?? res.statusText;
-    throw new Error(err);
+    throw new Error(data?.error || res.statusText);
   }
 
   return data as T;
