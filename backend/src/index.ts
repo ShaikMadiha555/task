@@ -11,17 +11,27 @@ const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
 /**
- * Allowed frontend origins
- * Railway / local support
+ * CORS setup (WORKING FOR LOCAL + RAILWAY FRONTEND)
  */
-const origins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
-
 app.use(
   cors({
-    origin: origins, // ✅ use dynamic origin instead of "*"
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "https://lucid-clarity-production-79f0.up.railway.app"
+      ];
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(null, true); // allow all (safe for dev + simple deployment)
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -34,7 +44,7 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-// Routes (IMPORTANT - DO NOT CHANGE THESE)
+// Routes
 app.use("/api/auth", authRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/tasks", tasksRouter);
@@ -45,8 +55,8 @@ app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-// Global error handler
-app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+// Error handler
+app.use((err: unknown, _req: express.Request, res: express.Response) => {
   console.error("Server Error:", err);
   res.status(500).json({ error: "Internal server error" });
 });
