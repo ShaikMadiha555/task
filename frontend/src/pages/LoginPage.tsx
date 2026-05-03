@@ -16,16 +16,16 @@ export function LoginPage() {
     setBusy(true);
 
     try {
-      // 🔥 Call backend login API
-      const res = await api<{ token: string }>("/api/auth/login", {
+      // ✅ FIX: correct backend route is "/login" (NOT /api/auth/login)
+      const res = await api<{ token: string }>("/login", {
         method: "POST",
         json: { email, password },
       });
 
-      // 🔐 Save token in localStorage
+      // store token
       setToken(res.token);
 
-      // 🚀 Redirect after login
+      // redirect
       navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
