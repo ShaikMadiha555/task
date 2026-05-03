@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "npx prisma generate",
+    "postinstall": "cd backend && npx prisma generate",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
