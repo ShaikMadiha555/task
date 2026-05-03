@@ -14,15 +14,12 @@ const origins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
   .map((s) => s.trim())
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174"
-    ],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: origins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
