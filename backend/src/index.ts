@@ -15,9 +15,8 @@ const origins = (process.env.CORS_ORIGIN ?? "http://localhost:5173")
   .filter(Boolean);
 
 app.use(cors({
-  origin: origins,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json({ limit: "1mb" }));
